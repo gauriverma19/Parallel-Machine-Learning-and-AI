@@ -35,12 +35,12 @@ MPI parallel run the executable on 4 processors.
 
 Note: write this script when the TA interviews you. You can write it in the cluster in vi or in your local machine then transfer it to the cluster. 
 
-define the names of the job, output file and error file as hw1, hw1.out and hw1.err.
-request one compute node from the “express” partition;
-request 8 tasks per node;
-request 16GB memory;
-define your work directory, and go to this work directory;
-set the number of threads to 4
-command to run your compiled OpenMP executable omp_hello.
-load anaconda3/3.7 module;
-command to run a python file (any).
+* define the names of the job, output file and error file as hw1, hw1.out and hw1.err.
+* request one compute node from the “express” partition;
+* request 8 tasks per node;
+* request 16GB memory;
+* define your work directory, and go to this work directory;
+* set the number of threads to 4
+* command to run your compiled OpenMP executable omp_hello.
+* load anaconda3/3.7 module;
+* command to run a python file (any).
