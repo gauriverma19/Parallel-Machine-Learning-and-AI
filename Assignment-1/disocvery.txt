@@ -1,0 +1,155 @@
+
+
+login: 
+$ ssh -Y verma.g@login.discovery.neu.edu
+
+to got to compute node: srun -p debug --pty /bin/bash
+
+
+1. Show the node list, time limit, state, and CPU numbers of the “debug” partition.              [6 pts]
+sinfo --long -p debug  :- no CPUs
+sinfo -Nle -p debug
+sinfo -p debug
+top 2 are enough for all info
+
+sinfo -o "%P %N  %c  %m %a" -p debug
+
+
+2.
+Jobs typically pass through several states during their execution. The typical states are PENDING, RUNNING, SUSPENDED, COMPLETING, and COMPLETED. An explanation of each state follows.
+PD PENDING
+Job is awaiting resource allocation.
+R RUNNING
+Job currently has an allocation. Held job is being requeued.
+S SUSPENDED
+Job has an allocation, but execution has been suspended and CPUs have been released for other jobs.
+CG COMPLETING
+Job is in the process of completing. Some processes on some nodes may still be active.
+DL DEADLINE
+Job terminated on deadline.
+F FAILED
+Job terminated with non-zero exit code or other failure condition.
+TO TIMEOUT
+Job terminated upon reaching its time limit.
+
+
+3. Show all pending jobs on the “debug” partition.            [4 pts]
+
+squeue --state=pending -p debug
+
+OR
+
+#########squeue -p debug -t PENDING (same as above ) 
+#########squeue -p debug -t PENDING -o "%.6i %p" (shows priority and jobid only)
+
+
+4. Show how to use srun to request one node and 4 tasks for 30 minutes with 16GB memory on the “express” partition.       [5 pts]
+
+srun --partition=express  --nodes=1 --ntasks=4  --pty --export=ALL --mem=16G --time=00:30:00 /bin/bash
+or
+
+########> srun --partition=express  --nodes 1 --ntasks 4 --cpus-per-task 1 --pty --export=ALL --mem=16G --time=00:30:00 /bin/bash
+
+--pty: Execute task zero in pseudo terminal mode
+
+
+5. Use squeue to show the job information in the question 4, including the job_id and the node name which the job is working, and the job state.
+
+squeue -u verma.g
+or
+squeue -j jobid
+
+
+6. Show how to cancel the job in the question 4
+
+scancel jobid
+
+7. In your $HOME, create a new directory: tmp7105; then create a sub-directory: homework1
+
+mkdir name then cd for going inside directory or manually right click and make
+
+cd $HOME
+mkdir tmp7105
+cd tmp7105
+mkdir homework1
+
+
+8. Use SFTP from Mobaxterm to demo out.
+
+xfer.discovery.neu.edu
+
+9. Check available modules and loaded modules.             [4 pts]
+______________GOT TO HOME FIRST________________________
+module avail
+module list
+
+10. Load modules of anaconda3/3.7 and openmpi/3.1.2                     [4 pts]
+
+####module load modname
+module list
+module load anaconda3/3.7
+module load openmpi/3.1.2
+module list
+
+ 
+11. On this compute node, implement the following operations:        [8 pts]
+
+Compile omp_hello.c with gcc compiler with OpenMP flag.
+OpenMP parallel run the executable on 4 threads
+
+$ gcc -o omp_helloc -fopenmp omp_hello.c
+$ export OMP_NUM_THREADS=4
+$ ./omp_helloc
+
+
+12. On this compute node, implement the following operations:         [8 pts]
+
+Compile mpi_hello.c with MPI compiler wrapper.
+MPI parallel run the executable on 4 processors.
+
+$ mpicc -o mpihello mpi_hello.c
+$ mpiexec -np 4 -oversubscribe mpihello
+
+13. Copy the tarball hpl-2.3.tar.gz from /scratch/flyingsky2007 to your home directory; then extract the tarball using the command tar and flags. 
+
+cp /scratch/flyingsky2007/hpl-2.3.tar.gz  $HOME
+cd $HOME
+tar -xzvf hpl-2.3.tar.gz
+
+14. Write a sbatch script according to the following requirements:      [30 pts]
+
+Note: write this script when the TA interviews you. You can write it in the cluster in vi or in your local machine then transfer it to the cluster. 
+
+define the names of the job, output file and error file as hw1, hw1.out and hw1.err.
+request one compute node from the “express” partition;
+request 8 tasks per node;
+request 16GB memory;
+define your work directory, and go to this work directory;
+set the number of threads to 4
+command to run your compiled OpenMP executable omp_hello.
+load anaconda3/3.7 module;
+command to run a python file (any).
+
+nano hw1.bash            >>terminal
+ctr o + ctr x 		 >>terminal
+
+#!/bin/bash
+#SBATCH --job-name=hw1
+#SBATCH --output=hw1.out
+#SBATCH --error=hw1.err
+#SBATCH --time=00:10:00
+#SBATCH -p express
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=8
+#SBATCH --mem=16Gb
+#SBATCH --exclusive
+module load anaconda3/3.7
+workls=$HOME
+cd $work
+export OMP_NUM_THREADS=4
+./omp_helloc
+srun python hello.py
+
+sbatch hw1.bash		>>terminal
+cat hw1.out		>>terminal
+
